@@ -1,0 +1,44 @@
+version: "3.7"
+services:
+
+    api:
+        build: 
+            context: api/docker
+            dockerfile: development/nginx/Dockerfile
+        volumes:
+          - ./api:/case
+        ports:
+        - "8081:80"
+        depends_on:
+          - api-php-fpm
+
+    api-php-fpm:
+        build:
+            context: api/docker
+            dockerfile: development/php-fpm/Dockerfile
+        environment:
+            MYSQL_DATABASE: CaseBase  
+            MYSQL_USER: root  
+            MYSQL_PASSWORD: root 
+        volumes:
+          - ./api:/case
+
+    api-php-cli:
+        build:
+            context: api/docker
+            dockerfile: development/php-cli/Dockerfile
+        volumes:
+          - ./api:/case
+
+    mysql:    
+        image: mysql:8.0-debian  
+        environment:  
+            MYSQL_ROOT_PASSWORD: root  
+            MYSQL_DATABASE: case  
+            MYSQL_USER: admin  
+            MYSQL_PASSWORD: admin
+        volumes:
+            - db:/var/lib/mysql
+
+volumes:
+    db:
